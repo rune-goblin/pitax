@@ -11,12 +11,14 @@ class LiberationStore {
   locStatus = $state<Record<string, Degree | null>>({});
   favor = $state<Record<string, FavorStatus>>({});
   log = $state<LogEntry[]>([]);
+  visible = $state(DEFAULT_STATE.visible);
 
   apply(next: LiberationState): void {
     this.lp = next.lp;
     this.locStatus = { ...next.locStatus };
     this.favor = { ...next.favor };
     this.log = [...next.log];
+    this.visible = next.visible;
   }
 
   snapshot(): LiberationState {
@@ -26,6 +28,7 @@ class LiberationStore {
       locStatus: { ...this.locStatus },
       favor: { ...this.favor },
       log: [...this.log],
+      visible: this.visible,
     };
   }
 
@@ -104,6 +107,18 @@ class LiberationStore {
   logWardenPatrol(text: string): void {
     if (!game.user.isGM) return;
     this.#logAndSetLp(0, text);
+    this.#publish();
+  }
+
+  showHeroPanel(): void {
+    if (!game.user.isGM) return;
+    this.visible = true;
+    this.#publish();
+  }
+
+  hideHeroPanel(): void {
+    if (!game.user.isGM) return;
+    this.visible = false;
     this.#publish();
   }
 }

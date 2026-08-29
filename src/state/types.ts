@@ -13,6 +13,7 @@ export interface LiberationState {
   locStatus: Record<string, Degree | null>;
   favor: Record<string, FavorStatus>;
   log: LogEntry[];
+  visible: boolean;
 }
 
 export const DEFAULT_STATE: LiberationState = {
@@ -21,4 +22,5 @@ export const DEFAULT_STATE: LiberationState = {
   locStatus: {},
   favor: {},
   log: [],
+  visible: false,
 };

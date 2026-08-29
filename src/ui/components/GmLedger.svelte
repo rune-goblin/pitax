@@ -22,6 +22,14 @@
     <button type="button" class="scene-btn" onclick={() => void openPitaxScene()}>
       🎭 {game.i18n.localize('pitax.ledger.openScene')}
     </button>
+    <button
+      type="button"
+      class="scene-btn"
+      class:live={liberation.visible}
+      onclick={() => (liberation.visible ? liberation.hideHeroPanel() : liberation.showHeroPanel())}
+    >
+      {liberation.visible ? `👁 ${game.i18n.localize('pitax.ledger.hidePanel')}` : `🙈 ${game.i18n.localize('pitax.ledger.showPanel')}`}
+    </button>
     <div class="lp-mini">LP <b>{liberation.lp}</b></div>
   </div>
 
@@ -75,6 +83,11 @@
   .scene-btn:hover {
     border-color: var(--pitax-gold-dim);
     color: var(--pitax-gold-bright);
+  }
+  .scene-btn.live {
+    border-color: var(--pitax-good);
+    color: var(--pitax-good);
+    background: var(--pitax-good-dim);
   }
   .lp-mini {
     margin-left: auto;

@@ -1,0 +1,14 @@
+{
+  "_id": "pitaxHidePanel01",
+  "_key": "!macros!pitaxHidePanel01",
+  "name": "Pitax: Hide Liberation Panel (table)",
+  "type": "script",
+  "author": "pmtTemplateUser1",
+  "img": "icons/svg/hazing.svg",
+  "scope": "global",
+  "command": "game.modules.get('pitax')?.api?.hideHeroPanel();",
+  "ownership": {
+    "default": 0
+  },
+  "flags": {}
+}

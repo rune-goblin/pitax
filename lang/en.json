@@ -3,12 +3,15 @@
     "hero": {
       "title": "Liberation of Pitax",
       "heading": "Liberation of Pitax",
-      "factions": "Factions"
+      "factions": "Factions",
+      "gmOnly": "Only the GM can show the Liberation panel to the table."
     },
     "ledger": {
       "title": "Pitax Liberation Ledger",
       "gmOnly": "Only the GM can open the Pitax Liberation ledger.",
-      "openScene": "Open Pitax Scene"
+      "openScene": "Open Pitax Scene",
+      "showPanel": "Show for table",
+      "hidePanel": "Hide from table"
     },
     "journal": {
       "missing": "No \"Liberating Pitax\" journal found in this world — couldn't open the page for {name}.",
