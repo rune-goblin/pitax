@@ -1,0 +1,14 @@
+{
+  "_id": "pitaxLabelPins01",
+  "_key": "!macros!pitaxLabelPins01",
+  "name": "Pitax: Label Map Pins",
+  "type": "script",
+  "author": "pmtTemplateUser1",
+  "img": "icons/svg/book.svg",
+  "scope": "global",
+  "command": "if (!game.user.isGM) {\n  ui.notifications.warn(\"GM only.\");\n  return;\n}\nconst scene = canvas.scene;\nif (!scene) {\n  ui.notifications.warn(\"No active scene.\");\n  return;\n}\nconst updates = [];\nlet skipped = 0;\nfor (const note of scene.notes) {\n  if (note.text) continue;\n  const label = note.page?.name ?? note.entry?.name;\n  if (!label) { skipped++; continue; }\n  updates.push({ _id: note.id, text: label });\n}\nif (updates.length) await scene.updateEmbeddedDocuments(\"Note\", updates);\nui.notifications.info(`Labeled ${updates.length} pin(s)${skipped ? `, skipped ${skipped} with no linked journal` : \"\"}.`);",
+  "ownership": {
+    "default": 0
+  },
+  "flags": {}
+}

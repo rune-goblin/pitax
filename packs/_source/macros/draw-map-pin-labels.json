@@ -1,0 +1,14 @@
+{
+  "_id": "pitaxDrawPinLabl1",
+  "_key": "!macros!pitaxDrawPinLabl1",
+  "name": "Pitax: Draw Map Pin Labels",
+  "type": "script",
+  "author": "pmtTemplateUser1",
+  "img": "icons/svg/book.svg",
+  "scope": "global",
+  "command": "if (!game.user.isGM) {\n  ui.notifications.warn(\"GM only.\");\n  return;\n}\nconst scene = canvas.scene;\nif (!scene) {\n  ui.notifications.warn(\"No active scene.\");\n  return;\n}\nconst labeled = new Set(scene.drawings.filter((d) => d.getFlag(\"pitax\", \"pinLabelFor\")).map((d) => d.getFlag(\"pitax\", \"pinLabelFor\")));\nconst toCreate = [];\nlet skipped = 0;\nfor (const note of scene.notes) {\n  if (labeled.has(note.id)) continue;\n  const label = note.text || note.page?.name || note.entry?.name;\n  if (!label) { skipped++; continue; }\n  toCreate.push({\n    shape: { type: \"r\", width: 200, height: 30 },\n    x: note.x - 100,\n    y: note.y + (note.iconSize ?? 40) / 2 + 4,\n    fillType: 0,\n    strokeWidth: 0,\n    text: label,\n    fontSize: 24,\n    textColor: \"#ffffff\",\n    flags: { pitax: { pinLabelFor: note.id } },\n  });\n}\nif (toCreate.length) await scene.createEmbeddedDocuments(\"Drawing\", toCreate);\nui.notifications.info(`Created ${toCreate.length} pin label(s)${skipped ? `, skipped ${skipped} unlabeled pin(s)` : \"\"}.`);",
+  "ownership": {
+    "default": 0
+  },
+  "flags": {}
+}
