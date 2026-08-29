@@ -31,9 +31,11 @@ export async function initLiberationSync(options: LiberationSyncOptions = {}): P
 
   Hooks.on('updateJournalEntry', (doc: JournalEntry, changes: Record<string, unknown>) => {
     if (!isStateDoc(doc)) return;
-    const state = foundry.utils.getProperty(changes, `flags.${MODULE_ID}.${STATE_FLAG_KEY}`) as
-      | LiberationState
-      | undefined;
+    // `changes` is a diff: Foundry omits nested flag keys that didn't change (e.g. toggling
+    // `visible` alone drops `log`), so read the full flag off the document instead of the diff.
+    const touched = foundry.utils.hasProperty(changes, `flags.${MODULE_ID}.${STATE_FLAG_KEY}`);
+    if (!touched) return;
+    const state = doc.getFlag(MODULE_ID, STATE_FLAG_KEY) as LiberationState | undefined;
     if (!state) return;
     liberation.apply(state);
     onSync?.();
