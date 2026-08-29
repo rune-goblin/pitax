@@ -1,0 +1,14 @@
+{
+  "_id": "pitaxGmLedger001",
+  "_key": "!macros!pitaxGmLedger001",
+  "name": "Pitax: Open GM Ledger",
+  "type": "script",
+  "author": "pmtTemplateUser1",
+  "img": "icons/svg/scroll-unfurled.svg",
+  "scope": "global",
+  "command": "game.modules.get('pitax')?.api?.openGmLedger();",
+  "ownership": {
+    "default": 0
+  },
+  "flags": {}
+}

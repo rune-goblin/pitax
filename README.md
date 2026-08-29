@@ -1,8 +1,10 @@
 # Pitax
 
-A starting point for **Pathfinder 2e Foundry VTT** modules. Ship compendium content
-(`packs/`) and a scripted esmodule (`src/`) — a **Svelte 5** UI in an **ApplicationV2**
-shell — from one repo.
+Tracks and automates the **Liberation of Pitax** infiltration event (Kingmaker ch. 8 pt. 4):
+a GM-only ledger (Liberation Points, the 19 locations, the 8 factions, the NPC roster) and a
+shared player-facing marquee, kept in sync across every connected client. Built from the
+runegoblin Foundry PF2e module template — a scripted esmodule (`src/`) with a **Svelte 5**
+UI in **ApplicationV2**, plus a `macros` compendium pack.
 
 - System: `pf2e`
 - Foundry: v14 minimum, verified on v14
@@ -14,16 +16,17 @@ shell — from one repo.
   `svelte.config.ts`, and `scripts/*.ts` run on Node ≥ 22.18, with no
   `tsx` or `ts-node`. No v1 Foundry APIs — ApplicationV2, DialogV2, and DataModel only.
 
-- **Svelte 5 in ApplicationV2, wired up.** A working window (`src/ui/ExampleApp.ts`)
-  `mount()`s a runes component and `unmount()`s it on close. Open it from the console:
-  `game.modules.get('pitax').api.open()`.
+- **Svelte 5 in ApplicationV2, wired up.** Two windows — the GM ledger
+  (`src/ui/GmLedgerApp.ts`) and the shared marquee (`src/ui/HeroPanelApp.ts`) — each
+  `mount()` a runes component and `unmount()` it on close. Open them from the console:
+  `game.modules.get('pitax').api.openGmLedger()` / `.openHeroPanel()`.
 
 - **Vite Hot Module Reload.** `src/index.ts` compiles to `dist/<id>.{js,css}`, the artifacts
   `module.json` loads. `npm run dev` serves with hot module reload (HMR); `npm run check` runs `svelte-check` and `tsc`.
 
 - **Compendium packs.** `packs/_source/` JSON sources (tracked) compile to LevelDB on
-  `npm run build` (gitignored, like `dist/`), via the bundled `fvtt` CLI. Ships an example
-  "Open Example" macro that opens the demo window.
+  `npm run build` (gitignored, like `dist/`), via the bundled `fvtt` CLI. Ships three macros:
+  open the shared marquee, open the GM ledger, and open the Pitax scene by name.
 
 - **One-command rename.** `npm run init -- <new-id> [--title "..."]` rewrites the id and
   title across the manifest, sources, flags, socket channel, and pack names, then deletes
@@ -55,43 +58,31 @@ shell — from one repo.
 module.json          manifest (esmodules, styles, packs, pf2e relationship)
 src/                 TypeScript + Svelte source (entry: src/index.ts)
   index.ts           registers hooks, exposes game.modules.get(id).api
-  constants.ts       MODULE_ID (used to build modules/<id>/… asset paths)
-  ui/ExampleApp.ts                       ApplicationV2 shell that mounts a Svelte component
-  ui/components/example/Example.svelte         sample Svelte 5 component (runes)
-  ui/components/example/RuneGoblinBadge.svelte example: art referenced by served path (img + fetched SVG)
-  styles.css         global styles → dist/pitax.css
+  constants.ts       MODULE_ID + the tracker's other fixed identifiers
+  data/               static chapter-8 content: locations, factions, NPCs, activities,
+                       adjustments, skill-slug mapping, and the pure factionDc/moodFor rules
+  state/liberationStore.svelte.ts  the reactive store (Svelte 5 runes), GM-gated mutators
+  state/persistence.ts             the module-owned JournalEntry that carries the state flag
+  state/sync.ts                    wires create/updateJournalEntry hooks to the store
+  state/rollRequest.ts             posts a PF2e @Check[...] chat card players click to roll
+  state/journalLink.ts             best-effort "open this location's journal page"
+  state/sceneMacro.ts              open the Pitax scene by name (world, else a compendium copy)
+  ui/HeroPanelApp.ts, ui/GmLedgerApp.ts   the two ApplicationV2 shells (Svelte-mounted)
+  ui/components/                   HeroPanel.svelte, GmLedger.svelte + its ledger/ tabs
+  styles.css         shared design tokens (the `.pitax` custom properties) → dist/pitax.css
   app.d.ts           ambient *.svelte declaration
 assets/              module art — one source, one output, served at modules/<id>/assets/…
 dist/                build output (gitignored) — what module.json loads
 lang/en.json         localization
 src/adventure.ts     adventure install prompt (no-op unless an Adventure pack is registered)
 packs/               compendium packs — built from _source by `npm run build` (gitignored)
-  _source/macros/    JSON pack sources (tracked) — e.g. the "Open Example" macro
-  _source/_library/  pack sources kept as compendia, never folded into an Adventure (optional)
+  _source/macros/    JSON pack sources (tracked): open the marquee, the ledger, the scene
 scripts/setup.ts     dev install (real dir + symlinks back to the repo)
 scripts/deploy.ts    build + copy a clean self-contained module into Foundry
 scripts/pack.ts      build the packs module.json registers (compendia + any Adventure); run by build
 scripts/build-adventure.ts     derive one Adventure document from the per-type sources (keepId import)
 scripts/normalize-refs.ts      rewrite world UUIDs back to compendium UUIDs after an unpack
-scripts/removeExampleFiles.ts  strip the example for a clean slate (one-shot; self-deletes)
 ```
-
-## Remove the example
-
-The template ships a **worked example** — the demo window (`src/ui/`), the Rune Goblin badge,
-and the *Open Example* macro — so you can see the patterns (Svelte in ApplicationV2, art by
-served path, a compendium pack) in action. It's a demonstration to learn from, **not** a base
-class to extend in place: build your own ApplicationV2 alongside it, modeled on what it shows.
-
-Once you've taken what you need, strip it:
-
-```bash
-npm run remove-example-files
-```
-
-It deletes the example files and trims `src/index.ts`, `module.json`, and `lang/en.json` back
-to a minimal skeleton that still builds and loads, then removes itself. Until you add your
-first `.svelte` file, `npm run check` prints a harmless "no svelte input files" warning.
 
 ## Develop
 
@@ -177,18 +168,20 @@ claude mcp add -s project svelte -- npx -y @sveltejs/mcp  # or commit for collab
 
 ## UI: Svelte 5 in ApplicationV2
 
-The window is a thin `ApplicationV2` subclass; Svelte renders. `_renderHTML` calls
+Each window is a thin `ApplicationV2` subclass; Svelte renders. `_renderHTML` calls
 `mount()` into a detached element, `_replaceHTML` inserts it, `_preClose` calls
-`unmount()`. See `src/ui/ExampleApp.ts`. Open the sample from the console:
-`game.modules.get('pitax').api.open()`.
+`unmount()`. See `src/ui/HeroPanelApp.ts` and `src/ui/GmLedgerApp.ts`. Both are standard
+framed windows with `window.resizable: true`, so drag (titlebar) and resize (corner handle)
+come from Foundry's own window chrome — no hand-rolled pointer-capture code. Open them from
+the console: `game.modules.get('pitax').api.openHeroPanel()` / `.openGmLedger()` (GM-gated).
 
 ## Compendium packs (fvtt CLI)
 
 Pack **sources** live in `packs/_source/<name>/*.json` (tracked). `npm run build` compiles
 every one into a LevelDB at `packs/<name>` via `scripts/pack.ts` — the built packs are
 gitignored, like `dist/`, so the shipped LevelDB always matches the sources and the current
-module id. The starter example is the `macros` pack with an **Open Example** script macro
-(`game.modules.get('<id>')?.api?.open()`), which opens the example window from the macro bar.
+module id. The `macros` pack ships three: open the marquee, open the GM ledger, and open the
+Pitax scene by name.
 
 Edit the JSON sources, then rebuild. The `fvtt` CLI (a dev dependency) is wrapped for manual
 single-pack work — close Foundry first, as it locks the LevelDB while it runs (the `build`

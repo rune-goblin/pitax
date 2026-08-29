@@ -1,7 +1,7 @@
 {
   "id": "pitax",
   "title": "Pitax",
-  "description": "A Pathfinder 2e Foundry VTT module template: compendium content plus a scripted esmodule with a Svelte 5 UI mounted in ApplicationV2.",
+  "description": "Tracks and automates the Liberation of Pitax infiltration event (Kingmaker ch. 8 pt. 4): a GM ledger and a shared player marquee, synced live.",
   "version": "0.1.0",
   "license": "MIT",
   "authors": [

@@ -1,0 +1,14 @@
+{
+  "_id": "pitaxOpenScene01",
+  "_key": "!macros!pitaxOpenScene01",
+  "name": "Pitax: Open Pitax Scene",
+  "type": "script",
+  "author": "pmtTemplateUser1",
+  "img": "icons/svg/city.svg",
+  "scope": "global",
+  "command": "game.modules.get('pitax')?.api?.openPitaxScene();",
+  "ownership": {
+    "default": 0
+  },
+  "flags": {}
+}

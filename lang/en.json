@@ -1,5 +1,22 @@
 {
   "pitax": {
-    "title": "Pitax"
+    "hero": {
+      "title": "Liberation of Pitax",
+      "heading": "Liberation of Pitax",
+      "factions": "Factions"
+    },
+    "ledger": {
+      "title": "Pitax Liberation Ledger",
+      "gmOnly": "Only the GM can open the Pitax Liberation ledger.",
+      "openScene": "Open Pitax Scene"
+    },
+    "journal": {
+      "missing": "No \"Liberating Pitax\" journal found in this world — couldn't open the page for {name}.",
+      "pageMissing": "Couldn't find a journal page for {name} — opening the journal instead."
+    },
+    "scene": {
+      "importing": "Importing \"{name}\" from a compendium — it isn't in this world yet.",
+      "missing": "No scene named \"{name}\" found in this world or its compendia."
+    }
   }
 }

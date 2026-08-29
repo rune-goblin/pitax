@@ -1,3 +1,35 @@
 .pitax {
-  --pitax-accent: #6b21a8;
+  --pitax-ground: #1c1425;
+  --pitax-panel: #241a2e;
+  --pitax-panel-2: #2c2036;
+  --pitax-marquee: linear-gradient(180deg, #3a2844, #2f2138);
+  --pitax-ink: #ece3e6;
+  --pitax-ink-dim: #b7a8bc;
+  --pitax-ink-faint: #7e6d85;
+  --pitax-line: rgba(236, 227, 230, 0.11);
+  --pitax-line-strong: rgba(236, 227, 230, 0.2);
+  --pitax-gold: #c9a24b;
+  --pitax-gold-bright: #e8c877;
+  --pitax-gold-dim: rgba(201, 162, 75, 0.35);
+  --pitax-good: #6ba579;
+  --pitax-good-dim: rgba(107, 165, 121, 0.18);
+  --pitax-warn: #c98a3f;
+  --pitax-warn-dim: rgba(201, 138, 63, 0.18);
+  --pitax-danger: #bd5555;
+  --pitax-danger-dim: rgba(189, 85, 85, 0.2);
+  --pitax-font-display: Cinzel, 'Iowan Old Style', serif;
+  --pitax-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  color: var(--pitax-ink);
+  background: var(--pitax-ground);
+}
+
+.pitax button {
+  font-family: inherit;
+  color: inherit;
+}
+
+.pitax .pitax-scroll {
+  overflow: auto;
+  scrollbar-width: thin;
 }
